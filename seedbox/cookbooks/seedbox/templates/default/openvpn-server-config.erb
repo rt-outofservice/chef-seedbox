@@ -1,0 +1,24 @@
+port <%= node['openvpn']['server']['port'] %>
+proto udp
+dev tun
+
+ca ca.crt
+cert <%= node['openvpn']['server']['certificates']['server-name'] %>.crt
+key <%= node['openvpn']['server']['certificates']['server-name'] %>.key  # This file should be kept secret
+dh dh2048.pem
+tls-auth ta.key 0 # 1 for clients
+server <%= node['openvpn']['server']['client-ip'] %> <%= node['openvpn']['server']['client-mask'] %>
+client-config-dir ccd
+push "redirect-gateway def1 bypass-dhcp"
+push "dhcp-option DNS 8.8.8.8"
+push "dhcp-option DNS 8.8.4.4"
+keepalive 10 120
+cipher AES-256-CBC
+comp-lzo
+user nobody
+group nogroup
+persist-key
+persist-tun
+status /dev/null
+log /dev/null
+# verb 3 

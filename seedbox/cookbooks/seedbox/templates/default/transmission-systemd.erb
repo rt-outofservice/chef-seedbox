@@ -1,0 +1,12 @@
+[Unit]
+Description=Transmission BitTorrent Daemon
+After=network.target
+
+[Service]
+User=<%= node['share-server']['ftp']['username'] %>
+Type=notify
+ExecStart=/usr/bin/transmission-daemon -f --log-error --config-dir /home/<%= node['share-server']['ftp']['username'] %>/.config/transmission-daemon
+ExecReload=/bin/kill -s HUP $MAINPID
+
+[Install]
+WantedBy=multi-user.target

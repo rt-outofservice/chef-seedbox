@@ -1,0 +1,53 @@
+upstream transmission  {
+      server 127.0.0.1:9091;
+}
+server {
+      listen 443 ssl spdy;
+      server_name seedbox.domain.com;
+
+      # Path to the root of your installation
+      error_log /var/log/nginx/transmission_error.log;
+      access_log /var/log/nginx/transmission_access.log;
+
+      ### SSL cert files ###
+      ssl_certificate /etc/ssl/private/transmission.crt;
+      ssl_certificate_key /etc/ssl/private/transmission.key;
+
+      ### Add SSL specific settings here ###
+      ssl_session_timeout 10m;
+
+      ssl_protocols SSLv3 TLSv1 TLSv1.1 TLSv1.2;
+      ssl_ciphers ALL:!ADH:!EXPORT56:RC4+RSA:+HIGH:+MEDIUM:+LOW:+SSLv3:+EXP;
+      ssl_prefer_server_ciphers on;
+
+      location ^~ /transmission/ {
+          proxy_http_version 1.1;
+          proxy_set_header Connection "";
+          proxy_pass_header X-Transmission-Session-Id;
+
+          location /transmission/rpc {
+              proxy_pass http://transmission;
+          }
+
+          location /transmission/web/ {
+              proxy_pass http://transmission;
+          }
+
+          location /transmission/upload {
+              proxy_pass http://transmission;
+          }
+
+          location /transmission/web/style/ {
+              alias /usr/share/transmission/web/style/;
+          }
+
+          location /transmission/web/javascript/ {
+              alias /usr/share/transmission/web/javascript/;
+          }
+
+          location /transmission/web/images/ {
+              alias /usr/share/transmission/web/images/;
+          }
+      }
+
+}

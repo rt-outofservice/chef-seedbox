@@ -1,0 +1,5 @@
+name 'seedbox'
+maintainer 'RT'
+maintainer_email 'vala4i@gmail.com'
+description 'Installs/configures OpenVPN (client/server) + transmission + ftps-server + nfs-server'
+version '0.1.0'

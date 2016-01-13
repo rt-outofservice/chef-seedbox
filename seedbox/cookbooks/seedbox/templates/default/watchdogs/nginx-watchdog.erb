@@ -1,0 +1,34 @@
+#!/bin/bash
+#set -x
+
+PIDFILE="/var/run/nginx.pid"
+
+test_proc () {
+  if [ -f $PIDFILE ] ; then
+    kill -0 `cat $PIDFILE` > /dev/null 2>&1
+    echo $?
+  else
+    echo 1
+  fi
+}
+
+echo "Starting script at $(date -R)"
+
+if [ $(test_proc) -eq 0 ] ; then
+  echo -e "\tNginx process pid \t$(cat $PIDFILE)\tis alive. \n\tNothing to do."
+else
+  echo -e "\tNo nginx process. \tRestarting..."
+
+  /etc/init.d/nginx stop
+  sleep 5
+  /etc/init.d/nginx start
+  echo
+  if [ -f $PIDFILE ] ; then
+    echo -e "\tNginx process pid \t$(cat $PIDFILE)\tis alive. \n\tStarted correctly."
+  else
+    echo -e "\tSomething wrong, no PID file"
+  fi
+fi
+
+echo "Script finished at $(date -R)"
+echo

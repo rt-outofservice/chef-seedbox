@@ -1,0 +1,25 @@
+#!/bin/bash
+#set -x
+
+PROCESS=$(netstat -nlp | grep 9091 | grep -oE '[0-9]+/trans.+')
+
+echo "Starting script at $(date -R)"
+
+if [ ! -z "$PROCESS" ] ; then
+  echo -e "\tTransmission process pid \t$(echo $PROCESS | grep -oE '[0-9]+')\tis alive. \n\tNothing to do."
+else
+  echo -e "\tNo transmission process. \tRestarting..."
+
+  /etc/init.d/transmission-daemon stop
+  sleep 5
+  /etc/init.d/transmission-daemon start
+  echo
+  if [ -z "$PROCESS" ] ; then
+    echo -e "\tTransmission process pid \t$(netstat -nlp | grep 9091 | grep -oE '[0-9]+/trans.+' |  grep -oE '[0-9]+')\tis alive. \n\tStarted correctly."
+  else
+    echo -e "\tSomething wrong, no PID found"
+  fi
+fi
+
+echo "Script finished at $(date -R)"
+echo

@@ -1,0 +1,5 @@
+#! /bin/bash
+
+ip rule add from <%= node['ip'] %> table 128
+ip route add table 128 to <%= node['subnet'] %> dev <%=node['net-interface'] %>
+ip route add table 128 default via <%= node['gateway'] %>

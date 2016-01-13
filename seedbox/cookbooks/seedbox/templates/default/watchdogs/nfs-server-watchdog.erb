@@ -1,0 +1,25 @@
+#!/bin/bash
+#set -x
+
+PROCESS=$(ps aux | grep -E '\[nfsd4\]$' | awk '{ print $2 }')
+
+echo "Starting script at $(date -R)"
+
+if [ ! -z "$PROCESS" ] ; then
+  echo -e "\tNFS-server process pid \t$(echo $PROCESS)\tis alive. \n\tNothing to do."
+else
+  echo -e "\tNo NFS-server process. \tRestarting..."
+
+  /etc/init.d/nfs-kernel-server stop
+  sleep 5
+  /etc/init.d/nfs-kernel-server start
+  echo
+  if [ -z "$PROCESS" ] ; then
+    echo -e "\tNFS-server process pid \t$(ps aux | grep -E '\[nfsd4\]$' | awk '{ print $2 }')\tis alive. \n\tStarted correctly."
+  else
+    echo -e "\tSomething wrong, no PID found"
+  fi
+fi
+
+echo "Script finished at $(date -R)"
+echo
